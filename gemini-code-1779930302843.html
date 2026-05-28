@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>너는 알록달록한 사람 🌈</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&family=Playfair+Display:ital,wght@0,600;1,400&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-gradient: linear-gradient(180deg, #f1f5f9 0%, #fefcf9 100%);
+            --card-bg: rgba(255, 255, 255, 0.88);
+            --text-main: #2d3748;
+            --text-sub: #718096;
+            --primary: #4a90e2;
+            --primary-soft: #e2f0fd;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Noto Sans KR', sans-serif;
+        }
+
+        body {
+            background: var(--bg-gradient);
+            background-attachment: fixed;
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 40px 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1050px;
+            background: var(--card-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-radius: 32px;
+            box-shadow: 0 20px 50px rgba(142, 153, 180, 0.12);
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            padding: 50px;
+            overflow: hidden;
+        }
+
+        /* 상단 네비게이션 바 */
+        .gnb {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 45px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid rgba(226, 232, 240, 0.8);
+        }
+        .gnb .logo {
+            font-size: 19px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #5a189a, #ff6b6b);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            cursor: pointer;
+        }
+        .gnb-menu {
+            display: flex;
+            gap: 25px;
+            font-size: 14px;
+            color: var(--text-sub);
+            font-weight: 500;
+        }
+        .gnb-menu span {
+            cursor: pointer;
+            padding-bottom: 4px;
+            transition: all 0.3s;
+        }
+        .gnb-menu span.active {
+            color: var(--text-main);
+            font-weight: 700;
+            border-bottom: 2px solid var(--primary);
+        }
+
+        .hidden { display: none !important; }
+
+        /* --- [1] 테스트 탭 레이아웃 --- */
+        .test-layout {
+            display: grid;
+            grid-template-columns: 240px 1px 1fr;
+            gap: 40px;
+        }
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .status-badge {
+            padding: 16px 20px;
+            border-radius: 16px;
+            font-size: 14px;
+            color: #a0aec0;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+        .status-badge.active {
+            background: #ffffff;
+            color: var(--text-main);
+            font-weight: 700;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.04);
+        }
+        .status-badge.completed {
+            color: #48bb78;
+            font-weight: 600;
+        }
+        .divider {
+            background: linear-gradient(to bottom, rgba(226,232,240,0.2), rgba(226,232,240,1), rgba(226,232,240,0.2));
+        }
+        .main-content {
+            padding: 10px 0 10px 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        .question-header {
+            font-size: 13px;
+            letter-spacing: 1px;
+            color: var(--primary);
+            font-weight: 700;
+            margin-bottom: 12px;
+        }
+        .question-title {
+            font-size: 22px;
+            font-weight: 700;
+            line-height: 1.6;
+            color: #1a202c;
+            margin-bottom: 40px;
+            word-break: keep-all;
+            min-height: 70px;
+        }
+
+        /* 슬라이더 커스텀 */
+        .slider-container { margin: 40px 0; }
+        .slider {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 8px;
+            border-radius: 10px;
+            background: linear-gradient(to right, #36a2eb 0%, #e2e8f0 50%, #ff6384 100%);
+            outline: none;
+        }
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 26px;
+            height: 26px;
+            border-radius: 50%;
+            background: #ffffff;
+            border: 4px solid var(--primary);
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(74,144,226,0.3);
+            transition: transform 0.1s;
+        }
+        .slider::-webkit-slider-thumb:hover { transform: scale(1.2); }
+        .slider-labels {
+            display: flex; justify-content: space-between; margin-top: 18px; font-size: 13px; color: var(--text-sub);
+        }
+        .slider-labels span { width: 45%; line-height: 1.4; }
+        .slider-labels span:nth-child(1) { text-align: left; color: #2b6cb0; font-weight: 600; }
+        .slider-labels span:nth-child(2) { text-align: right; color: #c53030; font-weight: 600; }
+
+        .btn-group { display: flex; justify-content: space-between; margin-top: 40px; }
+        button {
+            padding: 14px 32px; border: none; border-radius: 50px; font-size: 15px; font-weight: 600; cursor: pointer; transition: all 0.2s;
+        }
+        .btn-prev { background: #edf2f7; color: #4a5568; }
+        .btn-prev:hover { background: #e2e8f0; }
+        .btn-next { background: linear-gradient(135deg, #4a90e2, #63b3ed); color: white; box-shadow: 0 6px 16px rgba(66,153,225,0.25); }
+        .btn-next:hover { transform: translateY(-1px); }
+
+        /* --- [2] 결과 보기 탭 레이아웃 --- */
+        .result-grid { display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 40px; }
+        .main-result-card {
+            border-radius: 28px; padding: 50px 35px; text-align: center; color: white;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            box-shadow: 0 20px 45px rgba(0,0,0,0.06); position: relative; overflow: hidden;
+            background: linear-gradient(135deg, #4a90e2, #63b3ed);
+        }
+        .main-result-card h3 { font-size: 15px; font-weight: 400; opacity: 0.9; margin-bottom: 5px; }
+        .main-result-card .sub-quote { font-family: 'Playfair Display', serif; font-style: italic; font-size: 14px; opacity: 0.75; margin-bottom: 30px; }
+        .main-result-card .main-mbti { font-size: 72px; font-weight: 900; letter-spacing: 3px; margin-bottom: 10px; text-shadow: 0 4px 10px rgba(0,0,0,0.15); }
+        .main-result-card .concept-title { font-size: 24px; font-weight: 700; margin-bottom: 15px; }
+        .main-result-card .concept-desc { font-size: 14px; opacity: 0.95; line-height: 1.65; word-break: keep-all; max-width: 340px; }
+
+        .side-results { display: flex; flex-direction: column; gap: 20px; }
+        .situation-box-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+        .situation-item { background: #ffffff; border-radius: 20px; padding: 18px; border: 1px solid #e2e8f0; box-shadow: 0 4px 12px rgba(0,0,0,0.02); }
+        .sit-name { font-size: 13px; color: var(--text-sub); font-weight: 600; margin-bottom: 6px; }
+        .sit-mbti { font-size: 24px; font-weight: 800; color: #1a202c; margin-bottom: 10px; letter-spacing: 1px; }
+
+        /* 게이지 바 */
+        .bar-container { display: flex; flex-direction: column; gap: 6px; font-size: 11px; }
+        .bar-row { display: flex; justify-content: space-between; align-items: center; }
+        .bar-bg { background: #edf2f7; height: 7px; border-radius: 4px; width: 100%; margin: 2px 0; overflow: hidden; position: relative; }
+        .bar-fill { height: 100%; border-radius: 4px; transition: width 0.6s ease-out; }
+
+        .total-analysis {
+            grid-column: span 2; margin-top: 20px; background: #ffffff; border-radius: 24px;
+            padding: 30px; border: 1px solid #e2e8f0; display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 35px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.02);
+        }
+        .btn-restart { background: #2d3748; color: white; display: block; margin: 15px auto 0 auto; }
+        .btn-restart:hover { background: #1a202c; }
+
+        /* --- [3] MBTI란? 탭 디자인 --- */
+        .info-layout { max-width: 800px; margin: 0 auto; line-height: 1.8; color: #333; }
+        .info-layout h2 { font-size: 26px; font-weight: 700; color: #1a202c; margin-bottom: 25px; text-align: center; }
+        .info-layout p { font-size: 15px; margin-bottom: 20px; color: #4a5568; text-align: justify; word-break: keep-all; }
+        .info-highlight {
+            background: rgba(74, 144, 226, 0.08); border-left: 4px solid var(--primary);
+            padding: 20px; border-radius: 0 16px 16px 0; margin: 30px 0; font-weight: 500;
+        }
+
+        /* 알림 팝업 무드 스타일 */
+        .alert-box {
+            background: #fffaf0; border: 1px solid #feebc8; color: #c05621;
+            padding: 20px; border-radius: 16px; text-align: center; margin: 40px 0; font-weight: 500;
+        }
+
+        footer { text-align: center; margin-top: 45px; font-size: 13px; color: #a0aec0; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="gnb">
+        <div class="logo" onclick="switchTab('test')">🌈 다채로운 성향 저장소</div>
+        <div class="gnb-menu">
+            <span id="menu-test" class="active" onclick="switchTab('test')">테스트 진행</span>
+            <span id="menu-result" onclick="switchTab('result')">결과 보기</span>
+            <span id="menu-info" onclick="switchTab('info')">MBTI란?</span>
+        </div>
+    </div>
+
+    <div id="tab-test" class="test-layout">
+        <div class="sidebar">
+            <div class="status-badge" id="badge-0">🏫 학교 / 회사</div>
+            <div class="status-badge" id="badge-1">🏠 집</div>
+            <div class="status-badge" id="badge-2">👥 친구와 함께</div>
+            <div class="status-badge" id="badge-3">🔥 스트레스 상황</div>
+        </div>
+        <div class="divider"></div>
+        <div class="main-content">
+            <div>
+                <div class="question-header" id="question-number">Q 1 / 40</div>
+                <div class="question-title" id="question-text">질문을 불러오는 중입니다...</div>
+                <div class="slider-container">
+                    <input type="range" min="0" max="100" value="50" class="slider" id="mbti-slider">
+                    <div class="slider-labels">
+                        <span id="label-left">👈 성향 A</span>
+                        <span id="label-right">성향 B 👉</span>
+                    </div>
+                </div>
+            </div>
+            <div class="btn-group">
+                <button class="btn-prev" id="btn-prev" onclick="moveQuestion(-1)">이전</button>
+                <button class="btn-next" id="btn-next" onclick="moveQuestion(1)">다음 →</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="tab-result" class="hidden">
+        <div id="result-placeholder" class="alert-box">
+            <h3>아직 분석된 결과가 없습니다.</h3>
+            <p style="margin-top: 8px; font-size: 14px;">'테스트 진행' 탭에서 40개의 질문에 슬라이더로 답하시면 역동적인 스펙트럼 결과를 실시간으로 확인하실 수 있습니다!</p>
+            <button class="btn-next" style="margin-top:15px; padding:10px 24px; font-size:13px;" onclick="switchTab('test')">테스트 하러 가기</button>
+        </div>
+
+        <div id="result-content" class="result-grid hidden">
+            <div class="main-result-card" id="main-card">
+                <h3>당신의 종합 스펙트럼 컬러</h3>
+                <div class="sub-quote">Every side of you is valid and beautiful</div>
+                <div class="main-mbti" id="res-main-mbti">종합</div>
+                <div class="concept-title" id="res-concept-title">분석중</div>
+                <div class="concept-desc" id="res-concept-desc">설명문</div>
+            </div>
+
+            <div class="side-results">
+                <div style="font-size:16px; font-weight:700; color:#1a202c;">4대 독립 상황별 판정</div>
+                <div class="situation-box-grid">
+                    <div class="situation-item">
+                        <div class="sit-name">🏫 학교 / 회사</div>
+                        <div class="sit-mbti" id="sit-0-mbti">-</div>
+                        <div class="bar-container" id="sit-0-bars"></div>
+                    </div>
+                    <div class="situation-item">
+                        <div class="sit-name">🏠 집</div>
+                        <div class="sit-mbti" id="sit-1-mbti">-</div>
+                        <div class="bar-container" id="sit-1-bars"></div>
+                    </div>
+                    <div class="situation-item">
+                        <div class="sit-name">👥 친구와 함께</div>
+                        <div class="sit-mbti" id="sit-2-mbti">-</div>
+                        <div class="bar-container" id="sit-2-bars"></div>
+                    </div>
+                    <div class="situation-item">
+                        <div class="sit-name">🔥 스트레스 상황</div>
+                        <div class="sit-mbti" id="sit-3-mbti">-</div>
+                        <div class="bar-container" id="sit-3-bars"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="total-analysis">
+                <div>
+                    <div style="font-size:15px; font-weight:700; margin-bottom:15px;">종합 가중치 지표 (이분법의 경계를 넘어)</div>
+                    <div class="bar-container" id="total-bars" style="gap:12px; color:#4a5568;"></div>
+                </div>
+                <div style="display:flex; flex-direction:column; justify-content:center; background:#f7fafc; padding:20px; border-radius:18px; border:1px solid #edf2f7;">
+                    <div style="font-size:14px; font-weight:700; color:var(--primary); margin-bottom:6px;">통합적 성향 분석 보고서 📝</div>
+                    <p id="total-comment" style="font-size:13.5px; color:#4a5568; line-height:1.6; word-break:keep-all;"></p>
+                </div>
+                <div style="grid-column: span 2; text-align: center;">
+                    <button class="btn-restart" onclick="restartTest()">🔄 처음부터 다시 검사하기</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="tab-info" class="info-layout hidden">
+        <h2>성격의 스펙트럼, 그리고 입체적인 인간에 대하여</h2>
+        
+        <p>기존의 대중적인 MBTI 테스트는 오랜 시간 동안 사람들에게 흥미와 공감을 선사해 왔지만, 한편으로는 인간을 단 16가지의 좁은 상자 안에 가두어버리는 이분법적인 편견을 낳기도 했습니다. "너는 외향형(E)이니까 항상 활기차겠네", "너는 이성형(T)이니까 차갑고 눈물이 없겠네" 같은 단편적인 규정들은 역동적으로 살아 숨 쉬는 한 인간의 다채로운 면모를 온전히 설명하지 못합니다.</p>
+        
+        <p>인간의 성격은 고정된 고체 형태가 아니라, 흐르는 액체처럼 유동적입니다. 우리는 주어진 환경과 마주하는 대상, 그리고 우리의 심리적 상태에 따라 완벽하게 다른 방어기제와 행동 방식을 꺼내어 사용합니다. 학교나 회사처럼 사회적인 페르소나가 요구되는 환경에서는 철저하고 논리적인 'T'나 'J'의 방습벽을 세우다가도, 가장 안전한 공간인 '집'으로 돌아오면 한없이 감성적이고 자유로운 'F'나 'P'의 상태로 무장해제를 하기도 합니다.</p>
+
+        <div class="info-highlight">
+            "인간은 누구나 내면에 상반된 두 가지 성향의 씨앗을 동시에 품고 있습니다. 단지 상황이라는 수분과 햇빛이 주어질 때 어떤 씨앗이 더 선명하게 싹을 틔우느냐의 차이일 뿐입니다."
+        </div>
+
+        <p>친한 친구들 앞에서는 세상 누구보다 유쾌하게 대화를 주도하는 외향적인 면모를 보이다가도, 극심한 슬픔이나 번아웃 같은 스트레스 상황에 직면하면 모든 문을 걸어 잠그고 깊은 동굴 속으로 잠적해 에너지를 모으는 내향적인 행동을 보이는 것 역시 모순이 아닙니다. 이 모든 모습이 전부 다른 사람이 아닌 '진짜 당신'의 파편들입니다.</p>
+
+        <p>따라서 이번 프로젝트는 당신을 단 하나의 이분법적 수식어로 정의하지 않습니다. T가 51%이고 F가 49%로 나온 사람은 냉혈한도, 감상주의자도 아닙니다. 그저 상황에 따라 두 가지 지표의 아름다운 경계를 자유롭게 넘나들 수 있는 입체적인 프리즘을 가진 존재입니다. 이 사이트를 통해 고정관념에서 벗어나 상황에 따라 알록달록하게 빛나는 당신만의 고유한 내면의 색깔 조합을 발견해 보세요.</p>
+    </div>
+
+    <footer>
+        ⭐ MBTI는 참고일 뿐, 당신을 정의하지 않아요. 당신은 그보다 더 다채로운 존재니까요.
+    </footer>
+</div>
+
+<script>
+    // --- 상황별 정밀 문항 데이터셋 구성 (상황 s별 고유 문항 배치) ---
+    const rawQuestions = [
+        // 🏫 1. 학교 / 회사 (10개) - 왼쪽(0에 가까움)=I/S/T/J , 오른쪽(100에 가까움)=E/N/F/P
+        { s:0, type:"TF", q:"팀플이나 회의에서 의견 충돌이 생겼을 때 나의 행동은?", l:"논리적인 근거로 조율한다 (T)", r:"팀원들의 기분과 분위기를 살핀다 (F)" },
+        { s:0, type:"EI", q:"조별 과제나 프로젝트에 처음 만난 사람들이 가득할 때 나는?", l:"조용히 내 역할에만 집중한다 (I)", r:"먼저 말을 건네며 주도한다 (E)" },
+        { s:0, type:"SN", q:"새로운 프로젝트의 기획서를 작성해야 할 때 선호하는 방식은?", l:"기존의 검증된 데이터와 사례 참고 (S)", r:"이전에 없던 새롭고 파격적인 아이디어 (N)" },
+        { s:0, type:"JP", q:"과제나 업무 마감 기한이 주어졌을 때 나의 실제 행동은?", l:"미리 계획을 세워 여유 있게 끝낸다 (J)", r:"몰입해서 마감 직전에 제출한다 (P)" },
+        { s:0, type:"TF", q:"교수님이나 상사에게 피드백을 받을 때 내가 더 집중하는 것은?", l:"지적된 내용의 객관적 사실과 대안 (T)", r:"나를 대하는 상대방의 말투와 태도 (F)" },
+        { s:0, type:"EI", q:"강의실이나 사무실에 출근했을 때 내가 선호하는 자리는?", l:"혼자 집중하기 좋은 구석 자리 (I)", r:"사람들과 소통하기 좋은 중심 자리 (E)" },
+        { s:0, type:"SN", q:"프로젝트 세부 지침을 전달받을 때 선호하는 양식은?", l:"1부터 10까지 명확한 매뉴얼 (S)", r:"큰 틀 안에서 자유가 보장되는 환경 (N)" },
+        { s:0, type:"JP", q:"갑작스러운 추가 업무나 과제 변경 사항이 발생했을 때 내 반응은?", l:"계획이 틀어져 난감하고 아쉬움 (J)", r:"유연하고 긍정적으로 즉흥 대처함 (P)" },
+        { s:0, type:"TF", q:"동료가 업무 실수로 속상해할 때 내 머릿속에 먼저 드는 생각은?", l:"어쩌다 저런 실수가 난 거지? (T)", r:"많이 위축됐겠다, 위로해 줘야지 (F)" },
+        { s:0, type:"JP", q:"일을 시작하기 전 나의 책상이나 작업용 폴더 정리 상태는?", l:"깔끔하게 정돈되어 있어야 몰입 가능 (J)", r:"어질러져 있어도 찾는 데 문제없음 (P)" },
+
+        // 🏠 2. 집 상황 (10개)
+        { s:1, type:"EI", q:"주말에 온전히 집에서 혼자 사색하며 보낼 때 내 마음은?", l:"충만하고 편안하게 충전된다 (I)", r:"다소 심심해서 외부에 눈길이 간다 (E)" },
+        { s:1, type:"SN", q:"침대에 누워 조용히 잠들기 직전 내 뇌 속의 흐름은?", l:"오늘 있었던 팩트 위주 일상의 정리 (S)", r:"꼬리를 물고 이어지는 온갖 우주적 상상 (N)" },
+        { s:1, type:"JP", q:"방 청소나 밀린 빨래를 해치우는 나만의 타이밍 규칙은?", l:"정해진 요일이나 주기대로 칼같이 정리 (J)", r:"도저히 발 디딜 틈이 없을 때 몰아서 해결 (P)" },
+        { s:1, type:"TF", q:"가족이나 룸메이트가 진지하게 고민을 상담해 올 때 내 대답은?", l:"현실적인 타개책과 팁을 즉시 전한다 (T)", r:"마음고생 심했겠다며 감정적으로 안아준다 (F)" },
+        { s:1, type:"SN", q:"오랜만에 집에서 배달 음식을 주문할 때 선택 유형은?", l:"실패 확률이 없는 검증된 익숙한 메뉴 (S)", r:"새로 생긴 매장이나 독특한 신메뉴 도전 (N)" },
+        { s:1, type:"JP", q:"휴식을 취하다가 갑작스러운 친구의 '집 앞인데 나올래?' 연락에?", l:"갑작스러운 습격에 당황스럽고 부담됨 (J)", r:"오히려 좋아 하며 주섬주섬 옷을 입음 (P)" },
+        { s:1, type:"SN", q:"내 방 수납 인테리어나 배치를 할 때 가장 집중하는 것은?", l:"동선의 효율성과 물건 수납의 실용성 (S)", r:"방이 주는 전반적 감성과 고유의 컨셉 (N)" },
+        { s:1, type:"SN", q:"집에서 유튜브나 OTT 미디어를 볼 때 선호하는 장르는?", l:"현실을 다룬 다큐멘터리, 정보, 예능 (S)", r:"판타지, SF, 세계관이 뚜렷한 허구의 서사 (N)" },
+        { s:1, type:"EI", q:"저녁 시간에 식구들과 모여 대화할 때 나의 보편적인 태도는?", l:"상대의 이야기를 고개를 끄덕이며 주로 들음 (I)", r:"오늘 있었던 일이나 생각을 먼저 많이 말함 (E)" },
+        { s:1, type:"JP", q:"집안 물건을 꺼내 쓰고 나서 보관용 자리에 돌려놓는 타이밍은?", l:"다 쓰자마자 즉시 제자리에 복귀 (J)", r:"귀찮으니 나중에 한 번에 정리하려 방치 (P)" },
+
+        // 👥 3. 친구와 함께 (10개)
+        { s:2, type:"JP", q:"지인들과 주말 약속 모임 장소를 확정할 때 선호하는 양태는?", l:"가이드라인과 동선을 꼼꼼히 픽스 (J)", r:"큰 뼈대만 잡고 당일 상황에 맞춰 결정 (P)" },
+        { s:2, type:"TF", q:"친구가 갑자기 '나 너무 번아웃 와서 퇴사했어'라고 폭탄 발언을 하면?", l:"실업급여는 나와? 다음 계획은 어때? (T)", r:"진짜 고생 많았다, 얼마나 힘들었으면 그랬어 (F)" },
+        { s:2, type:"EI", q:"3명 이상의 친구들이 모인 티타임 좌석에서 나의 포지션은?", l:"상대의 사연에 열심히 공감하며 호응함 (I)", r:"화두를 던지고 유머를 가미해 리드함 (E)" },
+        { s:2, type:"SN", q:"단짝 친구와 낯선 해외로 여행을 갈 때 나를 가장 설레게 만드는 것?", l:"현지에서 경험할 맛집 투어와 세부 액티비티 (S)", r:"이국적인 풍경이 주는 신비로운 감성과 영감 (N)" },
+        { s:2, type:"TF", q:"시간 약속에 매번 20분씩 늦는 친구를 볼 때 내 마음 속 진짜 본심은?", l:"시간 관념과 매너를 어긴 행동에 화가 남 (T)", r:"사정이 있겠지 싶거나 갈등이 싫어 넘김 (F)" },
+        { s:2, type:"EI", q:"친구들과 격렬하고 즐겁게 야외 활동을 한 뒤 헤어질 때 내 생체 배터리는?", l:"행복했지만 기가 완전 소진되어 침대 생각뿐 (I)", r:"좋은 자극을 받아 엔도르핀이 돌고 하이해짐 (E)" },
+        { s:2, type:"SN", q:"친구가 유행하는 독특한 스타일로 염색이나 코디를 바꾸고 나타나면?", l:"미용실 위치나 가격 등 실용적인 대화 (S)", r:"변화된 아우라나 상징적 무드를 캐치해 극찬 (N)" },
+        { s:2, type:"TF", q:"사소한 가치관 오해로 친구와 논쟁이나 다툼이 벌어질 때 나는?", l:"감정을 걷어내고 논리적 시시비비를 가림 (T)", r:"갈등 상황 자체가 숨 막혀서 감정 해소를 우선함 (F)" },
+        { s:2, type:"SN", q:"주말 맛집 투어 모임 장소를 고를 때 내가 맹신하는 기준 지표는?", l:"누적 방문자 리뷰 수, 평점, 데이터 (S)", r:"매장이 뿜어내는 분위기, 독창적 컨셉 (N)" },
+        { s:2, type:"JP", q:"당일 약속 2시간 전, 친구가 급한 속사정으로 약속을 파기하면?", l:"오늘 하루를 위해 맞춰둔 스케줄이 엉망이 돼 불편 (J)", r:"친구의 안위가 먼저 걱정되고 대안 일정을 조율 (P)" },
+
+        // 🔥 4. 스트레스 상황 (10개)
+        { s:3, type:"JP", q:"감당하기 힘든 프로젝트 위기 변수가 닥쳤을 때 내 첫 행동 패턴은?", l:"현실적 수습을 위한 구조 대안 계획 수립 (J)", r:"일단 멘탈이 나가 도망치거나 회피하고 싶어짐 (P)" },
+        { s:3, type:"TF", q:"타인에게 억울한 비난이나 지적을 들어 극도로 분노 게이지가 찰 때?", l:"머리가 도리어 차가워지며 반박 팩트 수집 (T)", r:"눈물이 먼저 왈칵 쏟아지거나 속이 꽉 막힘 (F)" },
+        { s:3, type:"EI", q:"과부하가 걸려 멘탈이 파괴됐을 때 심리적 안정을 찾는 은신처는?", l:"아무 연락도 받지 않는 조용한 방에서 침묵 (I)", r:"지인들을 불러내 술 한잔하거나 수다로 배출 (E)" },
+        { s:3, type:"TF", q:"어떤 일의 큰 실패를 겪었을 때 나를 가장 갉아먹는 괴로움의 실체는?", l:"낭비된 시간, 자원 등 물리적 기회비용 손실 (T)", r:"나에 대한 자책감과 타인의 시선이 주는 상처 (F)" },
+        { s:3, type:"SN", q:"극도의 압박감이 몰려올 때 내 생각 회로의 비주얼은?", l:"당장 오늘 처리해야 할 가시적인 현실의 괴로움 (S)", r:"꼬리를 물고 우주 파멸급 최악의 미래 시나리오 구상 (N)" },
+        { s:3, type:"JP", q:"완벽하게 통제되던 루틴 일정이 완전히 어그러질 때 드는 상태는?", l:"통제권을 상실해 숨이 턱 막히고 패닉에 빠짐 (J)", r:"오히려 변칙 상황에 스릴을 느끼며 즉흥 대처 (P)" },
+        { s:3, type:"TF", q:"힘겨운 고비를 건너는 나에게 타인이 건넬 수 있는 최고의 위로는?", l:"현 상황을 단칼에 끊어내 줄 날카로운 솔루션 (T)", r:"이유 불문하고 내 편이 되어 따뜻하게 감싸주는 공감 (F)" },
+        { s:3, type:"SN", q:"스트레스 지수가 과다 누적될 때 신체나 생활 방식의 변화 유형은?", l:"폭식, 폭음 혹은 불면증 등 1차원적 육체 반응 (S)", r:"세상과 분리된 몽상이나 깊은 상념의 바다로 도피 (N)" },
+        { s:3, type:"TF", q:"마감 5분 전, 공들인 문서 파일이 날아가는 비상사태가 터지면?", l:"즉각 백업 폴더를 뒤지거나 강제 재부팅 후 대안 실행 (T)", r:"멘붕에 빠져 비명을 지르거나 발을 동동 구름 (F)" },
+        { s:3, type:"EI", q:"극심한 무기력증(번아웃)이 도래했을 때 사회적 소통 방식은?", l:"카톡, SNS 계정을 비활성화하고 깊은 동굴 속 잠적 (I)", r:"오히려 충동쇼핑을 하거나 새로운 모임에 가입해 환기 (E)" }
+    ];
+
+    // 요구분석서 명시 전용 비주얼 색상 팔레트
+    const colorMap = {
+        E: "#ff4d6d", I: "#1e3a8a", S: "#eab308", N: "#a855f7",
+        T: "#64748b", F: "#ec4899", J: "#10b981", P: "#f43f5e"
+    };
+
+    let currentIdx = 0;
+    let userAnswers = Array(40).fill(50); // 기본값 중간(50) 지정
+
+    function switchTab(tabName) {
+        document.getElementById('menu-test').classList.toggle('active', tabName === 'test');
+        document.getElementById('menu-result').classList.toggle('active', tabName === 'result');
+        document.getElementById('menu-info').classList.toggle('active', tabName === 'info');
+
+        document.getElementById('tab-test').classList.toggle('hidden', tabName !== 'test');
+        document.getElementById('tab-result').classList.toggle('hidden', tabName !== 'result');
+        document.getElementById('tab-info').classList.toggle('hidden', tabName !== 'info');
+
+        if (tabName === 'result') {
+            const hasStarted = userAnswers.some(val => val !== 50);
+            if (!hasStarted) {
+                document.getElementById('result-placeholder').classList.remove('hidden');
+                document.getElementById('result-content').classList.add('hidden');
+            }
+        }
+    }
+
+    function updateQuestion() {
+        const q = rawQuestions[currentIdx];
+        
+        for(let i=0; i<4; i++) {
+            const badge = document.getElementById(`badge-${i}`);
+            badge.classList.toggle('active', i === q.s);
+            badge.classList.toggle('completed', i < q.s);
+        }
+
+        const situationNames = ["학교 / 회사", "집", "친구와 함께", "스트레스 상황"];
+        document.getElementById('question-number').innerText = `Q ${currentIdx + 1} / 40 [${situationNames[q.s]} 파트]`;
+        document.getElementById('question-text').innerText = q.q;
+        document.getElementById('label-left').innerText = q.l;
+        document.getElementById('label-right').innerText = q.r;
+        
+        document.getElementById('mbti-slider').value = userAnswers[currentIdx];
+
+        if (currentIdx === rawQuestions.length - 1) {
+            document.getElementById('btn-next').innerText = "결과 분석하기 🌈";
+        } else {
+            document.getElementById('btn-next').innerText = "다음 →";
+        }
+        document.getElementById('btn-prev').style.visibility = currentIdx === 0 ? 'hidden' : 'visible';
+    }
+
+    function moveQuestion(step) {
+        userAnswers[currentIdx] = parseInt(document.getElementById('mbti-slider').value);
+        currentIdx += step;
+
+        if (currentIdx >= rawQuestions.length) {
+            processFinalResults();
+        } else {
+            updateQuestion();
+        }
+    }
+
+    // --- 수렴 오류 완벽 교정 알고리즘 ---
+    function processFinalResults() {
+        // 전역 종합 점수 보관함
+        let globalScores = { E: 0, I: 0, S: 0, N: 0, T: 0, F: 0, J: 0, P: 0 };
+        let countMap = { E: 0, I: 0, S: 0, N: 0, T: 0, F: 0, J: 0, P: 0 };
+
+        // 4대 상황별 결과 바인딩용 루프
+        for(let s = 0; s < 4; s++) {
+            let sitScores = { E:0, I:0, S:0, N:0, T:0, F:0, J:0, P:0 };
+            let sitCounts = { EI:0, SN:0, TF:0, JP:0 };
+
+            // 해당 상황에 속하는 10개 질문의 슬라이더 값만 파싱
+            for(let q = 0; q < 10; q++) {
+                let globalIdx = (s * 10) + q;
+                let val = userAnswers[globalIdx]; // 0 ~ 100 (왼쪽 치우침=0, 오른쪽=100)
+                let type = rawQuestions[globalIdx].type;
+
+                if (type === "EI") {
+                    sitScores.I += (100 - val); sitScores.E += val; sitCounts.EI++;
+                    globalScores.I += (100 - val); globalScores.E += val; countMap.I++; countMap.E++;
+                } else if (type === "SN") {
+                    sitScores.S += (100 - val); sitScores.N += val; sitCounts.SN++;
+                    globalScores.S += (100 - val); globalScores.N += val; countMap.S++; countMap.N++;
+                } else if (type === "TF") {
+                    sitScores.T += (100 - val); sitScores.F += val; sitCounts.TF++;
+                    globalScores.T += (100 - val); globalScores.F += val; countMap.T++; countMap.F++;
+                } else if (type === "JP") {
+                    sitScores.J += (100 - val); sitScores.P += val; sitCounts.JP++;
+                    globalScores.J += (100 - val); globalScores.P += val; countMap.J++; countMap.P++;
+                }
+            }
+
+            // 부문별 평균 비율 산출 (0~100%)
+            let final_E = sitScores.E / sitCounts.EI; let final_I = sitScores.I / sitCounts.EI;
+            let final_N = sitScores.N / sitCounts.SN; let final_S = sitScores.S / sitCounts.SN;
+            let final_F = sitScores.F / sitCounts.TF; let final_T = sitScores.T / sitCounts.TF;
+            let final_P = sitScores.P / sitCounts.JP; let final_J = sitScores.J / sitCounts.JP;
+
+            let sitStr = 
+                (final_I >= final_E ? 'I' : 'E') +
+                (final_S >= final_N ? 'S' : 'N') +
+                (final_T >= final_F ? 'T' : 'F') +
+                (final_J >= final_P ? 'J' : 'P');
+
+            document.getElementById(`sit-${s}-mbti`).innerText = sitStr;
+
+            // 독립 상황 미니 바 렌더링
+            const barContainer = document.getElementById(`sit-${s}-bars`);
+            barContainer.innerHTML = '';
+            barContainer.appendChild(createMiniBar(sitStr[0], Math.round(sitStr[0] === 'I' ? final_I : final_E)));
+            barContainer.appendChild(createMiniBar(sitStr[2], Math.round(sitStr[2] === 'T' ? final_T : final_F)));
+        }
+
+        // 전체 종합 백분율 계산
+        let total_E = globalScores.E / countMap.E; let total_I = globalScores.I / countMap.I;
+        let total_S = globalScores.S / countMap.S; let total_N = globalScores.N / countMap.N;
+        let total_T = globalScores.T / countMap.T; let total_F = globalScores.F / countMap.F;
+        let total_J = globalScores.J / countMap.J; let total_P = globalScores.P / countMap.P;
+
+        const finalMBTI = 
+            (total_I >= total_E ? 'I' : 'E') +
+            (total_S >= total_N ? 'S' : 'N') +
+            (total_T >= total_F ? 'T' : 'F') +
+            (total_J >= total_P ? 'J' : 'P');
+
+        document.getElementById('res-main-mbti').innerText = finalMBTI;
+
+        // 메인 카드에 요구 분석서 맞춤형 그라데이션 주입
+        const mainCard = document.getElementById('main-card');
+        mainCard.style.background = `linear-gradient(135deg, ${colorMap[finalMBTI[0]]}dd, ${colorMap[finalMBTI[2]]}dd)`;
+
+        document.getElementById('res-concept-title').innerText = `“입체적인 프리즘의 소유자”`;
+        document.getElementById('res-concept-desc').innerText = `당신은 하나의 이분법적 틀에 갇히지 않고, 마주하는 상황적 페르소나에 맞춰 다채롭게 변화하는 성향 조합을 지니고 있습니다.`;
+        document.getElementById('total-comment').innerText = `40개의 세밀한 프리즘 분석 결과, 당신의 내면에는 이성형(T) 성향이 약 ${Math.round(total_T)}%, 감성형(F) 성향이 약 ${Math.round(total_F)}% 균형을 이루며 깊이 있게 공존하고 있습니다.`;
+
+        // 종합 분석 결과 대형 가중치 지표 바 출력
+        const totalBarsContainer = document.getElementById('total-bars');
+        totalBarsContainer.innerHTML = '';
+        totalBarsContainer.appendChild(createTotalBar('E', 'I', total_E, total_I));
+        totalBarsContainer.appendChild(createTotalBar('S', 'N', total_S, total_N));
+        totalBarsContainer.appendChild(createTotalBar('T', 'F', total_T, total_F));
+        totalBarsContainer.appendChild(createTotalBar('J', 'P', total_J, total_P));
+
+        // 노출 가시성 제어 및 화면 탭 이동
+        document.getElementById('result-placeholder').classList.add('hidden');
+        document.getElementById('result-content').classList.remove('hidden');
+        switchTab('result');
+    }
+
+    function createMiniBar(label, value) {
+        const div = document.createElement('div');
+        div.className = 'bar-row';
+        div.innerHTML = `
+            <span style="font-weight:700; width:12px;">${label}</span>
+            <div class="bar-bg" style="width: 75px; margin: 0 6px;">
+                <div class="bar-fill" style="width: ${value}%; background: ${colorMap[label]};"></div>
+            </div>
+            <span style="color:var(--text-sub); font-size:10px;">${value}%</span>
+        `;
+        return div;
+    }
+
+    function createTotalBar(labelLeft, labelRight, valLeft, valRight) {
+        const container = document.createElement('div');
+        const isLeftDom = valLeft >= valRight;
+        const printVal = Math.round(isLeftDom ? valLeft : valRight);
+        const printLabel = isLeftDom ? labelLeft : labelRight;
+
+        container.innerHTML = `
+            <div style="display:flex; justify-content:space-between; font-size:12px; font-weight:500; margin-bottom:4px;">
+                <span>${labelLeft} (${Math.round(valLeft)}%)</span>
+                <span style="color:${colorMap[printLabel]}; font-weight:700;">${printLabel} 우세 (${printVal}%)</span>
+                <span>${labelRight} (${Math.round(valRight)}%)</span>
+            </div>
+            <div class="bar-bg" style="height:8px;">
+                <div class="bar-fill" style="width: ${printVal}%; float: ${isLeftDom ? 'left' : 'right'}; background: ${colorMap[printLabel]};"></div>
+            </div>
+        `;
+        return container;
+    }
+
+    function restartTest() {
+        currentIdx = 0;
+        userAnswers = Array(40).fill(50);
+        document.getElementById('result-content').classList.add('hidden');
+        document.getElementById('result-placeholder').classList.remove('hidden');
+        switchTab('test');
+        updateQuestion();
+    }
+
+    updateQuestion();
+</script>
+</body>
+</html>
